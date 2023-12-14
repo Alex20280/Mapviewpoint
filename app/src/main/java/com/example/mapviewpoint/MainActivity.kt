@@ -1,29 +1,32 @@
 package com.example.mapviewpoint
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.mapviewpoint.app.App
 import com.example.mapviewpoint.databinding.ActivityMainBinding
-import com.example.mapviewpoint.databinding.FragmentSignUpBinding
 import com.example.mapviewpoint.di.ViewModelFactory
-import com.example.mapviewpoint.ui.map.MapViewModel
 import com.example.mapviewpoint.ui.map.ToolbarIconClickListener
 import java.util.Calendar
+import java.util.TimeZone
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), ToolbarIconClickListener  {
+class MainActivity : AppCompatActivity(), ToolbarIconClickListener {
 
-   private lateinit var binding: ActivityMainBinding
-    //private val binding by viewBinding(ActivityMainBinding::bind)
+    private lateinit var binding: ActivityMainBinding
 
     @Inject
+    lateinit var viewModelFactory: ViewModelFactory
     lateinit var sharedViewModel: SharedViewModel
 
 
@@ -38,6 +41,8 @@ class MainActivity : AppCompatActivity(), ToolbarIconClickListener  {
 
     private fun viewModelInstantiation() {
         (applicationContext.applicationContext as App).appComponent.inject(this)
+        val viewModelProvider = ViewModelProvider(this, viewModelFactory)
+        sharedViewModel = viewModelProvider.get(SharedViewModel::class.java)
     }
 
     private fun initializeNavigation() {
@@ -57,27 +62,65 @@ class MainActivity : AppCompatActivity(), ToolbarIconClickListener  {
         }
     }
 
+
     private fun updateToolbar(destinationId: Int, appBarConfiguration: AppBarConfiguration) {
         if (appBarConfiguration.topLevelDestinations.none { it == destinationId }) {
             binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
-
-            if (destinationId == R.id.mapFragment) {
-                // If the current destination is the MapFragment, set a calendar icon and its behavior
-                binding.toolbar.setNavigationIcon(R.drawable.calendar)
-                binding.toolbar.setNavigationOnClickListener {
-                    onToolbarIconClicked()
-                    //Toast.makeText(this, "sdsdcc", Toast.LENGTH_LONG).show()
-                    // Add your custom behavior for the calendar icon here
-                    // For example, open a calendar view or perform any other desired action
-                }
-            }
+            binding.toolbar.menu.removeItem(R.id.exit_menu_item)
+            binding.toolbar.setOnMenuItemClickListener(null)
+            binding.toolbar.setNavigationOnClickListener(null)
         }
 
+        when (destinationId) {
+            R.id.mapFragment -> {
+                binding.toolbar.setNavigationIcon(R.drawable.calendar)
+                binding.toolbar.inflateMenu(R.menu.toolbar_menu)
+
+                binding.toolbar.setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
+                        R.id.exit_menu_item -> {
+                            onExitMenuClicked()
+                            true // Return true to indicate that the click event has been consumed
+                        }
+                        else -> false // Return false for other menu items to allow normal processing
+                    }
+                }
+
+                binding.toolbar.setNavigationOnClickListener {
+                    onToolbarIconClicked()
+                }
+            }
+
+            R.id.signInFragment -> {
+                binding.toolbar.menu.removeItem(R.id.exit_menu_item)
+                binding.toolbar.setNavigationIcon(null) // Remove any specific navigation icon
+                binding.toolbar.setOnMenuItemClickListener(null)
+            }
+
+            R.id.forgetPasswordFragment -> {
+                binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+                binding.toolbar.setOnMenuItemClickListener(null)
+                binding.toolbar.setNavigationOnClickListener {
+                    onBackPressed()
+                }
+            }
+            R.id.signUpFragment -> {
+                binding.toolbar.setNavigationOnClickListener {
+                    onBackPressed()
+                }
+            }
+
+            else -> {
+                // Handle other fragments or do nothing if no specific action is required
+            }
+        }
+    }
+
+    private fun onExitMenuClicked() {
+        sharedViewModel.setIconClicked(true)
     }
 
     override fun onToolbarIconClicked() {
-        // Implement your custom behavior for the toolbar icon click here
-        // For example, to open the date picker dialog
         showDatePickerDialog()
     }
 
@@ -95,15 +138,21 @@ class MainActivity : AppCompatActivity(), ToolbarIconClickListener  {
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        val datePickerDialog = DatePickerDialog(this,
+        val datePickerDialog = DatePickerDialog(
+            this,
             { _, selectedYear, selectedMonth, selectedDay ->
-                val selectedCalendar = Calendar.getInstance()
+                val selectedCalendar = Calendar.getInstance(TimeZone.getDefault())
                 selectedCalendar.set(selectedYear, selectedMonth, selectedDay)
+                selectedCalendar.set(Calendar.HOUR_OF_DAY, 0) // Set hour to 0
+                selectedCalendar.set(Calendar.MINUTE, 0) // Set minute to 0
+                selectedCalendar.set(Calendar.SECOND, 0) // Set second to 0
+                selectedCalendar.set(Calendar.MILLISECOND, 0) // Set millisecond to 0
 
                 val timestamp = selectedCalendar.timeInMillis
                 sharedViewModel.setSelectedDate(timestamp)
 
-            }, year, month, day)
+            }, year, month + 1, day
+        )
 
         datePickerDialog.show()
     }

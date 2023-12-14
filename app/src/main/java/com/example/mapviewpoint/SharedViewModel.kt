@@ -3,9 +3,6 @@ package com.example.mapviewpoint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.mapviewpoint.network.RequestResult
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import javax.inject.Inject
 
 class SharedViewModel @Inject constructor(): ViewModel() {
@@ -16,5 +13,13 @@ class SharedViewModel @Inject constructor(): ViewModel() {
     fun setSelectedDate(date: Long) {
         _selectedDate.value = date
     }
+
+    private val _exitClicked = MutableLiveData<Boolean>()
+    val getExitClicked: LiveData<Boolean> = _exitClicked
+
+    fun setIconClicked(click: Boolean) {
+        _exitClicked.value = click
+    }
+
 
 }

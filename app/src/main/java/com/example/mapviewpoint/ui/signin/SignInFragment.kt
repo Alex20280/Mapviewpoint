@@ -1,24 +1,19 @@
 package com.example.mapviewpoint.ui.signin
 
-import android.content.Context
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.mapviewpoint.R
 import com.example.mapviewpoint.app.App
+import com.example.mapviewpoint.base.checkFieldsForButtonColor
+import com.example.mapviewpoint.base.hideKeyboard
 import com.example.mapviewpoint.base.openScreen
-import com.example.mapviewpoint.databinding.FragmentMapBinding
+import com.example.mapviewpoint.base.viewBinding
 import com.example.mapviewpoint.databinding.FragmentSignInBinding
-import com.example.mapviewpoint.di.ViewModelFactory
 import com.example.mapviewpoint.network.RequestResult
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import javax.inject.Inject
 
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
@@ -33,6 +28,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
 
         viewModelInstanciation()
         navigateToSignUpPage()
+        editTextChangeListener()
         navigateToForgetPasswordScreen()
         observeSubmitClick()
         observeLogin()
@@ -55,6 +51,28 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
             }
         }
 
+    }
+
+    private fun editTextChangeListener() {
+        binding.editTextEmail.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(p0: Editable?) {
+                checkFieldsForButtonColor(binding.editTextEmail, binding.editTextPassword, binding.button)
+            }
+        })
+
+        binding.editTextPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(p0: Editable?) {
+                checkFieldsForButtonColor(binding.editTextEmail, binding.editTextPassword, binding.button)
+            }
+        })
     }
 
     private fun observeSubmitClick() {
@@ -97,15 +115,6 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     private fun navigateToForgetPasswordScreen() {
         binding.textViewForgotPassword.setOnClickListener {
             openScreen(SignInFragmentDirections.actionSignInFragmentToForgetPasswordFragment())
-        }
-    }
-
-    fun Fragment.hideKeyboard() {
-        val activity = requireActivity()
-        val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        val view = activity.currentFocus
-        if (view != null) {
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
 

@@ -16,6 +16,7 @@ import javax.inject.Singleton
         ViewModelModule::class,
         FirebaseDatabaseModule::class,
         FirebaseRegistrationModule::class,
+        LocationServiceModule::class,
         UserPreferenceModule::class]
 )
 @Singleton
@@ -25,6 +26,4 @@ interface AppComponent {
     fun inject(signInFragment: SignInFragment?)
     fun inject(signUpFragment: SignUpFragment?)
     fun inject(mapFragment: MapFragment?)
-
-    fun provideSharedViewModel(): SharedViewModel
 }
