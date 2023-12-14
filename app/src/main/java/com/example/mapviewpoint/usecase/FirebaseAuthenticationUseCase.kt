@@ -2,42 +2,31 @@ package com.example.mapviewpoint.usecase
 
 import com.example.mapviewpoint.network.ErrorDto
 import com.example.mapviewpoint.network.RequestResult
+import com.example.mapviewpoint.repository.AuthenticationRepositoryImpl
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import javax.inject.Inject
 
-class FirebaseAuthenticationUseCase(private val auth: FirebaseAuth) {
+class FirebaseAuthenticationUseCase @Inject constructor(
+    private val authenticationRepositoryImpl: AuthenticationRepositoryImpl
 
-    fun registerUser(email: String, password: String): RequestResult<Task<AuthResult>> {
-        try {
-            val authResultTask = auth.createUserWithEmailAndPassword(email, password)
-            return RequestResult.Success(authResultTask)
-        } catch (e: Exception) {
-            // Handle exceptions here
-            return RequestResult.Error(ErrorDto.Default("Registration problem"), 0)
-        }
+) {
+
+    fun registerUser(email: String, password: String) : RequestResult<Task<AuthResult>>{
+        return authenticationRepositoryImpl.registerUser(email, password)
     }
+
 
     fun loginUser(email: String, password: String): RequestResult<Task<AuthResult>> {
-        try {
-            val authResultTask = auth.signInWithEmailAndPassword(email, password)
-            return RequestResult.Success(authResultTask)
-        } catch (e: Exception) {
-            // Handle exceptions here
-            return RequestResult.Error(ErrorDto.Default("Login problem"), 0)
-        }
+        return authenticationRepositoryImpl.loginUser(email, password)
     }
 
-    fun resetPassword(email: String): RequestResult<Task<Void>> {
-        try {
-            val resetResultTask = auth.sendPasswordResetEmail(email)
-            return RequestResult.Success(resetResultTask)
-        } catch (e: Exception) {
-            return RequestResult.Error(ErrorDto.Default("Reset problem"), 0)
-        }
+    fun resetPassword(email: String): Task<RequestResult<Unit>> {
+        return authenticationRepositoryImpl.resetPassword(email)
     }
 
     fun getUserUd(): String? {
-        return auth.uid
+        return authenticationRepositoryImpl.getUserUd()
     }
 }

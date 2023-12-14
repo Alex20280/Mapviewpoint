@@ -13,10 +13,10 @@ import kotlin.coroutines.resumeWithException
 
 class LocationTrackerRepositoryImpl @Inject constructor(
     private val fusedLocationClient: FusedLocationProviderClient
-) {
+) : LocationTrackerRepository() {
 
     @SuppressLint("MissingPermission")
-    suspend fun getCurrentLocation(): LatLng = suspendCancellableCoroutine { cont ->
+    override suspend fun getCurrentLocation(): LatLng = suspendCancellableCoroutine { cont ->
 
         val locationTask = fusedLocationClient.lastLocation
 

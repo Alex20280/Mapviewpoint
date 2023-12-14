@@ -5,23 +5,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mapviewpoint.model.GpsCoordinates
-import com.example.mapviewpoint.network.RequestResult
 import com.example.mapviewpoint.prefs.UserPreferences
-import com.example.mapviewpoint.repository.GpsFirebaseRepository
+import com.example.mapviewpoint.repository.GpsFirebaseRepositoryImpl
 import com.example.mapviewpoint.usecase.CurrentLocationUseCase
+import com.example.mapviewpoint.usecase.ReceiveCoordinatesUseCase
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MapViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
-    private val gpsFirebaseRepository: GpsFirebaseRepository,
+    private val receiveCoordinatesUseCase: ReceiveCoordinatesUseCase,
     private val currentLocationUseCase: CurrentLocationUseCase
 ) : ViewModel() {
 
@@ -55,14 +49,14 @@ class MapViewModel @Inject constructor(
 
     suspend fun getGpsCoordinatesByTime(time: Long)  {
         viewModelScope.launch {
-            val coordinatesList: List<GpsCoordinates> = gpsFirebaseRepository.getCoordinatesByTime(time)
+            val coordinatesList: List<GpsCoordinates> = receiveCoordinatesUseCase.getCoordinatesByTime(time)
             chosenDateCoordinates.value = coordinatesList
         }
     }
 
     fun getGpsCoordinatesByLast24Hours() {
         viewModelScope.launch {
-            val coordinatesList: List<GpsCoordinates> = gpsFirebaseRepository.getCoordinatesLast24Hours()
+            val coordinatesList: List<GpsCoordinates> = receiveCoordinatesUseCase.getCoordinatesLast24Hours()
             twentyFourHoursCoordinates.value = coordinatesList
         }
     }
