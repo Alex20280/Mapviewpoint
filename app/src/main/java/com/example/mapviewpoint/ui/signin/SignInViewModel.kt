@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mapviewpoint.network.RequestResult
 import com.example.mapviewpoint.prefs.UserPreferences
-import com.example.mapviewpoint.usecase.FirebaseAuthenticationUseCase
+import com.example.mapviewpoint.usecase.GetUserUidUseCase
+import com.example.mapviewpoint.usecase.UserLoginUseCase
+import com.example.mapviewpoint.usecase.UserRegistrationUseCase
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.launch
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 class SignInViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
-    private val authenticationUseCase: FirebaseAuthenticationUseCase
+    private val userLoginUseCase: UserLoginUseCase,
+    private val getUserUidUseCase: GetUserUidUseCase
 ) : ViewModel() {
 
     private val signInResult = MutableLiveData<RequestResult<Task<AuthResult>>>()
@@ -30,7 +33,7 @@ class SignInViewModel @Inject constructor(
 
     fun loginUser(email: String, password: String) {
         viewModelScope.launch {
-            val response = authenticationUseCase.loginUser(email, password)
+            val response = userLoginUseCase.loginUser(email, password)
             Log.d("logCred", email + password)
             checkEmailResponse(response)
         }
@@ -40,7 +43,7 @@ class SignInViewModel @Inject constructor(
         when (response) {
             is RequestResult.Success -> {
                 signInResult.value = response
-                saveUserId(authenticationUseCase.getUserUd().toString())
+                saveUserId(getUserUidUseCase.getUserUid().toString())
             }
             is RequestResult.Error -> {
                 signInResult.postValue(RequestResult.Error(response.errorData, response.code))

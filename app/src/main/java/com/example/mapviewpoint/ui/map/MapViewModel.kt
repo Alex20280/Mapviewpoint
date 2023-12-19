@@ -6,16 +6,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mapviewpoint.model.GpsCoordinates
 import com.example.mapviewpoint.prefs.UserPreferences
-import com.example.mapviewpoint.repository.GpsFirebaseRepositoryImpl
 import com.example.mapviewpoint.usecase.CurrentLocationUseCase
-import com.example.mapviewpoint.usecase.ReceiveCoordinatesUseCase
+import com.example.mapviewpoint.usecase.GetDailyLocationCoordinateUseCase
+import com.example.mapviewpoint.usecase.GetLocationCoordinatesInTimeRangeUseCase
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MapViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
-    private val receiveCoordinatesUseCase: ReceiveCoordinatesUseCase,
+    private val receiveCoordinatesUseCase: GetLocationCoordinatesInTimeRangeUseCase,
+    private val getDailyLocationCoordinateUseCase: GetDailyLocationCoordinateUseCase,
     private val currentLocationUseCase: CurrentLocationUseCase
 ) : ViewModel() {
 
@@ -49,14 +50,14 @@ class MapViewModel @Inject constructor(
 
     suspend fun getGpsCoordinatesByTime(time: Long)  {
         viewModelScope.launch {
-            val coordinatesList: List<GpsCoordinates> = receiveCoordinatesUseCase.getCoordinatesByTime(time)
+            val coordinatesList: List<GpsCoordinates> = receiveCoordinatesUseCase.getCoordinatesInTimeRange(time)
             chosenDateCoordinates.value = coordinatesList
         }
     }
 
     fun getGpsCoordinatesByLast24Hours() {
         viewModelScope.launch {
-            val coordinatesList: List<GpsCoordinates> = receiveCoordinatesUseCase.getCoordinatesLast24Hours()
+            val coordinatesList: List<GpsCoordinates> = getDailyLocationCoordinateUseCase.getCoordinatesWithin24Hours()
             twentyFourHoursCoordinates.value = coordinatesList
         }
     }

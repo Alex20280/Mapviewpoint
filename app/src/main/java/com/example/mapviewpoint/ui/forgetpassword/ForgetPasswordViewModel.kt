@@ -4,12 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapviewpoint.network.RequestResult
-import com.example.mapviewpoint.usecase.FirebaseAuthenticationUseCase
+import com.example.mapviewpoint.usecase.ResetPasswordUseCase
+import com.example.mapviewpoint.usecase.UserRegistrationUseCase
 import com.google.android.gms.tasks.Task
 import javax.inject.Inject
 
 class ForgetPasswordViewModel @Inject constructor(
-    private val authenticationUseCase: FirebaseAuthenticationUseCase
+    private val resetPasswordUseCase: ResetPasswordUseCase
 ) : ViewModel() {
 
     private val resetPasswordResult = MutableLiveData<RequestResult<Unit>>()
@@ -18,7 +19,7 @@ class ForgetPasswordViewModel @Inject constructor(
     }
 
     fun resetPassword(email: String){
-        val response = authenticationUseCase.resetPassword(email)
+        val response = resetPasswordUseCase.resetPassword(email)
         checkEmailResponse(response)
     }
 

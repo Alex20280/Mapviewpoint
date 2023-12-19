@@ -14,7 +14,7 @@ class FirebaseDatabaseReaderUseCase(
     private val userPreferences: UserPreferences
 ) {
 
-    fun getDataByUid(onDataLoaded: (DataSnapshot?) -> Unit, onError: (DatabaseError?) -> Unit) {
+/*    fun getDataByUid(onDataLoaded: (DataSnapshot?) -> Unit, onError: (DatabaseError?) -> Unit) {
         // Assuming you have a "users" node in your database
         val locationsRef = firebaseDatabase.reference.child("locations")
 
@@ -33,5 +33,5 @@ class FirebaseDatabaseReaderUseCase(
                 onError(databaseError)
             }
         })
-    }
+    }*/
 }

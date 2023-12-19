@@ -131,7 +131,9 @@ class MainActivity : AppCompatActivity(), ToolbarIconClickListener {
         return host.navController
     }
 
-    private fun showDatePickerDialog() {
+
+
+   private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
 
         val year = calendar.get(Calendar.YEAR)
@@ -141,7 +143,8 @@ class MainActivity : AppCompatActivity(), ToolbarIconClickListener {
         val datePickerDialog = DatePickerDialog(
             this,
             { _, selectedYear, selectedMonth, selectedDay ->
-                val selectedCalendar = Calendar.getInstance(TimeZone.getDefault())
+                val selectedCalendar = Calendar.getInstance() //TimeZone.getDefault()
+
                 selectedCalendar.set(selectedYear, selectedMonth, selectedDay)
                 selectedCalendar.set(Calendar.HOUR_OF_DAY, 0) // Set hour to 0
                 selectedCalendar.set(Calendar.MINUTE, 0) // Set minute to 0
@@ -151,7 +154,7 @@ class MainActivity : AppCompatActivity(), ToolbarIconClickListener {
                 val timestamp = selectedCalendar.timeInMillis
                 sharedViewModel.setSelectedDate(timestamp)
 
-            }, year, month + 1, day
+            }, year, month, day
         )
 
         datePickerDialog.show()

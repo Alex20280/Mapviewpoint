@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mapviewpoint.network.RequestResult
-import com.example.mapviewpoint.usecase.FirebaseAuthenticationUseCase
+import com.example.mapviewpoint.usecase.UserRegistrationUseCase
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SignUpViewModel @Inject constructor(
-    private val registrationUseCase: FirebaseAuthenticationUseCase
+    private val registrationUseCase: UserRegistrationUseCase
 ) : ViewModel() {
 
     private val signUpResult = MutableLiveData<RequestResult<Task<AuthResult>>>()

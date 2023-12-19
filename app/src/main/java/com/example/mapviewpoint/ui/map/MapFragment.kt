@@ -3,6 +3,7 @@ package com.example.mapviewpoint.ui.map
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -104,28 +105,24 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
     private fun getMyCurrentLocation() {
        mapViewModel.getCurrentLocation()
-/*        locations.add(myCurrentLocation)
-        updateMap(locations)*/
     }
 
 
     private fun updateMap(coordinates: List<LatLng>) {
-        Log.d("ChosenDateCoordinates", coordinates.toString())
-
-        val reducedCoords = reduceCoordinateDensity(coordinates, 10.0)
-
+        if(coordinates.isEmpty()) {
+            Toast.makeText(requireContext(), "No location coordinates found for this date", Toast.LENGTH_SHORT).show()
+            return
+        }
+        //val reducedCoords = reduceCoordinateDensity(coordinates, 10.0)
         map.clear()
-
 
 /*        coordinates.forEach() {
             map.addMarker(MarkerOptions().position(it))
         }*/
-
-        reducedCoords.forEach { coord ->
+        coordinates.forEach { coord ->
             val marker = map.addMarker(MarkerOptions().position(coord))
             marker?.isFlat = true
         }
-
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates.first(), 16f))
     }
 
@@ -172,11 +169,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
     private fun observeTwentyFourHoursCoordinates() {
         mapViewModel.getTwentyFourHoursCoordinates().observe(viewLifecycleOwner){
-/*            it.map {
-                val time = Utils.convertTimestampToDate(it.timestamp)
-                Log.d("SomeTwentyFourHoursCoordinates", time)
-            }*/
-            val latLngs = it.map { it.toLatLng() }//.also { Log.d("TwentyFourHoursCoordinates", it.toString()) }
+            val latLngs = it.map { it.toLatLng() }
             updateMap(latLngs)
         }
     }
@@ -196,10 +189,8 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
     private fun observeDatePicker() {
         sharedViewModel.selectedDate.observe(requireActivity()){
-/*            val time = Utils.convertTimestampToDate(it)
-            Log.d("SomeHoursCoordinates", time)*/
             CoroutineScope(Dispatchers.IO).launch {
-                mapViewModel.getGpsCoordinatesByTime(it) //1701873672511
+                mapViewModel.getGpsCoordinatesByTime(it)
             }
         }
 

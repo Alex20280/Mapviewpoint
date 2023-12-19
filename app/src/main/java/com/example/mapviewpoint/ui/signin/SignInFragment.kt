@@ -81,14 +81,14 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
             val email: String = binding.editTextEmail.text?.toString() ?: ""
             val password: String = binding.editTextPassword.text?.toString() ?: ""
 
-            if (signInViewModel!!.isValidEmail(email) && signInViewModel!!.isValidPassword(password)) {
-                signInViewModel?.loginUser(email, password)
+            if (signInViewModel.isValidEmail(email) && signInViewModel.isValidPassword(password)) {
+                signInViewModel.loginUser(email, password)
             } else {
                 // Show error messages or UI feedback for invalid input
-                if (signInViewModel!!.isValidEmail(email)) {
+                if (signInViewModel.isValidEmail(email)) {
                     binding.editTextEmail.error = getString(R.string.invalid_email_warning)
                 }
-                if (!signInViewModel!!.isValidPassword(password)) {
+                if (!signInViewModel.isValidPassword(password)) {
                     binding.editTextPassword.error = getString(R.string.invalid_password_warning)
                 }
             }
