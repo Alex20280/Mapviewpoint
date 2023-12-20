@@ -9,7 +9,6 @@ import com.example.mapviewpoint.network.RequestResult
 import com.example.mapviewpoint.prefs.UserPreferences
 import com.example.mapviewpoint.usecase.GetUserUidUseCase
 import com.example.mapviewpoint.usecase.UserLoginUseCase
-import com.example.mapviewpoint.usecase.UserRegistrationUseCase
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.launch
@@ -35,11 +34,11 @@ class SignInViewModel @Inject constructor(
         viewModelScope.launch {
             val response = userLoginUseCase.loginUser(email, password)
             Log.d("logCred", email + password)
-            checkEmailResponse(response)
+            checkSignInResponse(response)
         }
     }
 
-    private fun checkEmailResponse(response: RequestResult<Task<AuthResult>>) {
+    private fun checkSignInResponse(response: RequestResult<Task<AuthResult>>) {
         when (response) {
             is RequestResult.Success -> {
                 signInResult.value = response

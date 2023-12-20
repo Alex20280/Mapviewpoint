@@ -1,13 +1,8 @@
 package com.example.mapviewpoint
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -17,8 +12,10 @@ import com.example.mapviewpoint.app.App
 import com.example.mapviewpoint.databinding.ActivityMainBinding
 import com.example.mapviewpoint.di.ViewModelFactory
 import com.example.mapviewpoint.ui.map.ToolbarIconClickListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Calendar
-import java.util.TimeZone
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), ToolbarIconClickListener {
@@ -117,7 +114,7 @@ class MainActivity : AppCompatActivity(), ToolbarIconClickListener {
     }
 
     private fun onExitMenuClicked() {
-        sharedViewModel.setIconClicked(true)
+        sharedViewModel.userLogOut()
     }
 
     override fun onToolbarIconClicked() {

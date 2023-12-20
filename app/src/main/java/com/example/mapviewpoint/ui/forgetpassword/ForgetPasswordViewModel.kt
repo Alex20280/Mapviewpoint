@@ -3,10 +3,11 @@ package com.example.mapviewpoint.ui.forgetpassword
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.mapviewpoint.network.RequestResult
 import com.example.mapviewpoint.usecase.ResetPasswordUseCase
-import com.example.mapviewpoint.usecase.UserRegistrationUseCase
 import com.google.android.gms.tasks.Task
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ForgetPasswordViewModel @Inject constructor(
@@ -19,15 +20,17 @@ class ForgetPasswordViewModel @Inject constructor(
     }
 
     fun resetPassword(email: String){
-        val response = resetPasswordUseCase.resetPassword(email)
-        checkEmailResponse(response)
+        viewModelScope.launch {
+            val response = resetPasswordUseCase.resetPassword(email)
+            checkPasswordResetResponse(response)
+        }
     }
 
     fun isValidEmail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    private fun checkEmailResponse(response:Task<RequestResult<Unit>>) {
+    private fun checkPasswordResetResponse(response:Task<RequestResult<Unit>>) {
         response.addOnCompleteListener { task ->
             val result = task.result
             when (result) {

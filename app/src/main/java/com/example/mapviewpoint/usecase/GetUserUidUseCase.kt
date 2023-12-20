@@ -5,7 +5,6 @@ import javax.inject.Inject
 
 class GetUserUidUseCase @Inject constructor(
     private val authenticationRepositoryImpl: AuthenticationRepositoryImpl
-
 ) {
 
     fun getUserUid(): String? {

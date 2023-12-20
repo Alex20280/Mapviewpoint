@@ -6,7 +6,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.mapviewpoint.R
 import com.example.mapviewpoint.SharedViewModel
 import com.example.mapviewpoint.app.App
@@ -15,6 +17,7 @@ import com.example.mapviewpoint.base.viewBinding
 import com.example.mapviewpoint.databinding.FragmentMapBinding
 import com.example.mapviewpoint.di.ViewModelFactory
 import com.example.mapviewpoint.model.GpsCoordinates
+import com.example.mapviewpoint.network.RequestResult
 import com.example.mapviewpoint.utils.PermissionsHelper
 import com.example.mapviewpoint.utils.PermissionsHelper.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.mapviewpoint.utils.Utils
@@ -37,6 +40,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
     private val binding by viewBinding(FragmentMapBinding::bind)
     private lateinit var map: GoogleMap
+    private var exitClickedObserver: Observer<Boolean>? = null
 
     val list = listOf<LatLng>(LatLng(49.960507447451285, 36.22328019613084), LatLng(49.961136313354544, 36.22173431057141))
 
@@ -62,9 +66,10 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
         googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
 
-        val sydney = LatLng(-37.0, 153.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+/*        val sydney = LatLng(-37.0, 153.0)
+        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))*/
+        //getMyCurrentLocation()
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
 
 
@@ -78,16 +83,27 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
         requestPermissions()
         observeDatePicker()
         observeMyCurrentLocation()
-        observeExitClick()
         iconClickListener()
         currentLocationListener()
         observeTwentyFourHoursCoordinates()
         observeChosenDateCoordinates()
+        observeUserLogout()
     }
 
-    private fun observeExitClick() {
-        sharedViewModel.getExitClicked.observe(viewLifecycleOwner){
-            navigateToSignInPage()
+    private fun observeUserLogout() {
+        sharedViewModel.getLogOutState.observe(viewLifecycleOwner) { result ->
+            if (findNavController().currentDestination?.id == R.id.mapFragment) {
+                when (result) {
+                    is RequestResult.Success -> {
+                        sharedViewModel.setLogOutState(RequestResult.Loading)
+                        navigateToSignInPage()
+                    }
+                    is RequestResult.Error -> {
+                        Toast.makeText(requireContext(), "Error with logging out", Toast.LENGTH_LONG).show()
+                    }
+                    is RequestResult.Loading -> Unit
+                }
+            }
         }
     }
 
@@ -161,6 +177,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
     private fun observeChosenDateCoordinates() {
         mapViewModel.getChosenDateCoordinates().observe(viewLifecycleOwner){
+            Log.d("MyOnwObserver", "Coordinates changed: $it")
             val latLngs = it.map { it.toLatLng() }
             updateMap(latLngs)
 
@@ -220,4 +237,5 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
+
 }

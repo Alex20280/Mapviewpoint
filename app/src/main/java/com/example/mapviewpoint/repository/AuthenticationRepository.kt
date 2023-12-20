@@ -7,11 +7,13 @@ import com.google.firebase.auth.AuthResult
 
 abstract class AuthenticationRepository {
 
-    abstract fun registerUser(email: String, password: String): RequestResult<Task<AuthResult>>
+    abstract suspend fun registerUser(email: String, password: String): RequestResult<Task<AuthResult>>
 
-    abstract fun loginUser(email: String, password: String): RequestResult<Task<AuthResult>>
+    abstract suspend fun loginUser(email: String, password: String): RequestResult<Task<AuthResult>>
 
-    abstract fun resetPassword(email: String): Task<RequestResult<Unit>>
+    abstract suspend fun resetPassword(email: String): Task<RequestResult<Unit>>
+
+    abstract suspend fun logout(): RequestResult<Unit>
 
     abstract fun getUserUd(): String?
 }

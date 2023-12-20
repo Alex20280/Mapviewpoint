@@ -10,7 +10,7 @@ import javax.inject.Inject
 class AuthenticationRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth
 ) : AuthenticationRepository(){
-    override fun registerUser(email: String, password: String): RequestResult<Task<AuthResult>> {
+    override suspend fun registerUser(email: String, password: String): RequestResult<Task<AuthResult>> {
         try {
             val authResultTask = auth.createUserWithEmailAndPassword(email, password)
             return RequestResult.Success(authResultTask)
@@ -20,7 +20,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun loginUser(email: String, password: String): RequestResult<Task<AuthResult>> {
+    override suspend fun loginUser(email: String, password: String): RequestResult<Task<AuthResult>> {
         try {
             val authResultTask = auth.signInWithEmailAndPassword(email, password)
             return RequestResult.Success(authResultTask)
@@ -30,7 +30,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun resetPassword(email: String): Task<RequestResult<Unit>> {
+    override suspend fun resetPassword(email: String): Task<RequestResult<Unit>> {
         val resetResultTask = auth.sendPasswordResetEmail(email)
         return resetResultTask.continueWith { task ->
             if (task.isSuccessful) {
@@ -38,6 +38,15 @@ class AuthenticationRepositoryImpl @Inject constructor(
             } else {
                 RequestResult.Error(ErrorDto.Default("Reset problem"), 0)
             }
+        }
+    }
+
+    override suspend fun logout(): RequestResult<Unit> {
+        try {
+            val logoutResult = auth.signOut()
+            return RequestResult.Success(logoutResult)
+        } catch (e: Exception) {
+            return RequestResult.Error(ErrorDto.Default("Logout problem"), 0)
         }
     }
 

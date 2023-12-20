@@ -8,10 +8,9 @@ import javax.inject.Inject
 
 class UserRegistrationUseCase @Inject constructor(
     private val authenticationRepositoryImpl: AuthenticationRepositoryImpl
-
 ) {
 
-    fun registerUser(email: String, password: String): RequestResult<Task<AuthResult>> {
+    suspend fun registerUser(email: String, password: String): RequestResult<Task<AuthResult>> {
         return authenticationRepositoryImpl.registerUser(email, password)
     }
 

@@ -51,14 +51,14 @@ class MapViewModel @Inject constructor(
     suspend fun getGpsCoordinatesByTime(time: Long)  {
         viewModelScope.launch {
             val coordinatesList: List<GpsCoordinates> = receiveCoordinatesUseCase.getCoordinatesInTimeRange(time)
-            chosenDateCoordinates.value = coordinatesList
+            chosenDateCoordinates.postValue(coordinatesList)
         }
     }
 
     fun getGpsCoordinatesByLast24Hours() {
         viewModelScope.launch {
             val coordinatesList: List<GpsCoordinates> = getDailyLocationCoordinateUseCase.getCoordinatesWithin24Hours()
-            twentyFourHoursCoordinates.value = coordinatesList
+            twentyFourHoursCoordinates.postValue(coordinatesList)
         }
     }
 }

@@ -23,7 +23,7 @@ class SignUpViewModel @Inject constructor(
     fun registerUser(email: String, password: String) {
         viewModelScope.launch {
             val response = registrationUseCase.registerUser(email, password)
-            checkEmailResponse(response)
+            checkSignUpResponse(response)
         }
     }
 
@@ -57,7 +57,7 @@ class SignUpViewModel @Inject constructor(
         return true
     }
 
-    private fun checkEmailResponse(response: RequestResult<Task<AuthResult>>) {
+    private fun checkSignUpResponse(response: RequestResult<Task<AuthResult>>) {
         when (response) {
             is RequestResult.Success -> {
                 signUpResult.value = response
