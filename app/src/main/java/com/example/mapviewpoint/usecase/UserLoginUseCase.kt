@@ -10,7 +10,7 @@ class UserLoginUseCase @Inject constructor(
     private val authenticationRepositoryImpl: AuthenticationRepositoryImpl
 
 ) {
-    suspend fun loginUser(email: String, password: String): RequestResult<Task<AuthResult>> {
+    suspend fun loginUser(email: String, password: String): RequestResult<AuthResult> {
         return authenticationRepositoryImpl.loginUser(email, password)
     }
 }

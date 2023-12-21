@@ -5,6 +5,7 @@ import com.example.mapviewpoint.network.RequestResult
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AuthenticationRepositoryImpl @Inject constructor(
@@ -20,6 +21,8 @@ class AuthenticationRepositoryImpl @Inject constructor(
         }
     }
 
+    //old
+/*
     override suspend fun loginUser(email: String, password: String): RequestResult<Task<AuthResult>> {
         try {
             val authResultTask = auth.signInWithEmailAndPassword(email, password)
@@ -27,6 +30,19 @@ class AuthenticationRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             // Handle exceptions here
             return RequestResult.Error(ErrorDto.Default("Login problem"), 0)
+        }
+    }
+*/
+
+    override suspend fun loginUser(email: String, password: String): RequestResult<AuthResult> {
+        return try {
+            val authResultTask = auth.signInWithEmailAndPassword(email, password)
+            authResultTask.await() // Wait for the task to complete
+            // If you reach this point, the task is considered successful
+            RequestResult.Success(authResultTask.result)
+        } catch (e: Exception) {
+            // Handle exceptions and errors here
+            RequestResult.Error(ErrorDto.Default("Login problem"), 0)
         }
     }
 

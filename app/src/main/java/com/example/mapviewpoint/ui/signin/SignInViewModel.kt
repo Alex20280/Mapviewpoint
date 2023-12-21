@@ -20,8 +20,8 @@ class SignInViewModel @Inject constructor(
     private val getUserUidUseCase: GetUserUidUseCase
 ) : ViewModel() {
 
-    private val signInResult = MutableLiveData<RequestResult<Task<AuthResult>>>()
-    fun getSignInResultLiveData(): LiveData<RequestResult<Task<AuthResult>>> {
+    private val signInResult = MutableLiveData<RequestResult<AuthResult>>()
+    fun getSignInResultLiveData(): LiveData<RequestResult<AuthResult>> {
         return signInResult
     }
 
@@ -38,7 +38,7 @@ class SignInViewModel @Inject constructor(
         }
     }
 
-    private fun checkSignInResponse(response: RequestResult<Task<AuthResult>>) {
+    private fun checkSignInResponse(response: RequestResult<AuthResult>) {
         when (response) {
             is RequestResult.Success -> {
                 signInResult.value = response
