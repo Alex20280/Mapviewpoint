@@ -65,9 +65,20 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
     implementation("com.google.firebase:firebase-database-ktx:20.3.0")
+
+
+    //Testing
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation("androidx.test.ext:junit:1.1.5")
+    implementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation ("io.mockk:mockk-android:1.13.1")//1.13.7
+    /*  debugImplementation("androidx.fragment:fragment-testing:1.6.2")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+        testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+        testImplementation ("org.junit.jupiter:junit-jupiter-api:5.8.2")
+        testRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.8.2")*/
+
+
 
     //Dagger
     implementation("com.google.dagger:dagger:2.48")

@@ -17,6 +17,7 @@ import javax.inject.Singleton
         FirebaseDatabaseModule::class,
         FirebaseRegistrationModule::class,
         LocationServiceModule::class,
+        RepositoryModule::class,
         UserPreferenceModule::class]
 )
 @Singleton

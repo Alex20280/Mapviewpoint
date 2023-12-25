@@ -6,11 +6,12 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
 
-class AuthenticationRepositoryImpl @Inject constructor(
-    private val auth: FirebaseAuth
-) : AuthenticationRepository(){
+class FakeAuthenticationRepository: AuthenticationRepository() {
+
+    val uid: String = ""
+    private lateinit var auth: FirebaseAuth
+
     override suspend fun registerUser(email: String, password: String): RequestResult<Task<AuthResult>> {
         try {
             val authResultTask = auth.createUserWithEmailAndPassword(email, password)
@@ -42,6 +43,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 RequestResult.Error(ErrorDto.Default("Reset problem"), 0)
             }
         }
+
     }
 
     override suspend fun logout(): RequestResult<Unit> {
@@ -54,6 +56,6 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }
 
     override fun getUserUd(): String? {
-        return auth.uid
+        return uid
     }
 }

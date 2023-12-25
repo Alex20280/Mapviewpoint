@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mapviewpoint.model.GpsCoordinates
 import com.example.mapviewpoint.prefs.UserPreferences
-import com.example.mapviewpoint.usecase.CurrentLocationUseCase
+import com.example.mapviewpoint.usecase.GetCurrentLocationUseCase
 import com.example.mapviewpoint.usecase.GetDailyLocationCoordinateUseCase
 import com.example.mapviewpoint.usecase.GetLocationCoordinatesInTimeRangeUseCase
 import com.google.android.gms.maps.model.LatLng
@@ -17,7 +17,7 @@ class MapViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
     private val receiveCoordinatesUseCase: GetLocationCoordinatesInTimeRangeUseCase,
     private val getDailyLocationCoordinateUseCase: GetDailyLocationCoordinateUseCase,
-    private val currentLocationUseCase: CurrentLocationUseCase
+    private val currentLocationUseCase: GetCurrentLocationUseCase
 ) : ViewModel() {
 
     private val twentyFourHoursCoordinates = MutableLiveData<List<GpsCoordinates>>()

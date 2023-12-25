@@ -25,8 +25,6 @@ class LocationTrackerRepositoryImpl @Inject constructor(
                 val latLng = LatLng(location.latitude, location.longitude)
                 cont.resume(latLng)
             }
-        }.addOnFailureListener {
-            cont.resumeWithException(it)
         }
     }
 }
