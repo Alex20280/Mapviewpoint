@@ -40,9 +40,6 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
     private val binding by viewBinding(FragmentMapBinding::bind)
     private lateinit var map: GoogleMap
-    private var exitClickedObserver: Observer<Boolean>? = null
-
-    val list = listOf<LatLng>(LatLng(49.960507447451285, 36.22328019613084), LatLng(49.961136313354544, 36.22173431057141))
 
     @Inject
     lateinit var mapViewModel: MapViewModel
@@ -53,6 +50,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
     private val callback = OnMapReadyCallback { googleMap ->
         map = googleMap
+
         /**
          * Manipulates the map once available.
          * This callback is triggered when the map is ready to be used.
@@ -97,6 +95,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
                     is RequestResult.Success -> {
                         sharedViewModel.setLogOutState(RequestResult.Loading)
                         navigateToSignInPage()
+                        resetMap()
                     }
                     is RequestResult.Error -> {
                         Toast.makeText(requireContext(), "Error with logging out", Toast.LENGTH_LONG).show()
@@ -130,7 +129,8 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
             return
         }
         //val reducedCoords = reduceCoordinateDensity(coordinates, 10.0)
-        map.clear()
+        //map.clear()
+        resetMap()
 
 /*        coordinates.forEach() {
             map.addMarker(MarkerOptions().position(it))
@@ -140,6 +140,10 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
             marker?.isFlat = true
         }
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates.first(), 16f))
+    }
+
+    private fun resetMap(){
+        map.clear()
     }
 
     //TODO should be removed (only for debugging)
