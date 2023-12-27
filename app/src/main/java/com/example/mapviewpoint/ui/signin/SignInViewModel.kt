@@ -41,7 +41,7 @@ class SignInViewModel @Inject constructor(
     private fun checkSignInResponse(response: RequestResult<AuthResult>) {
         when (response) {
             is RequestResult.Success -> {
-                signInResult.value = response
+                signInResult.postValue(response)
                 saveUserId(getUserUidUseCase.getUserUid().toString())
             }
             is RequestResult.Error -> {

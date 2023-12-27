@@ -4,24 +4,20 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.mapviewpoint.R
 import com.example.mapviewpoint.SharedViewModel
 import com.example.mapviewpoint.app.App
-import com.example.mapviewpoint.base.openScreen
-import com.example.mapviewpoint.base.viewBinding
+import com.example.mapviewpoint.extentions.openScreen
+import com.example.mapviewpoint.extentions.viewBinding
 import com.example.mapviewpoint.databinding.FragmentMapBinding
 import com.example.mapviewpoint.di.ViewModelFactory
 import com.example.mapviewpoint.model.GpsCoordinates
 import com.example.mapviewpoint.network.RequestResult
 import com.example.mapviewpoint.utils.PermissionsHelper
 import com.example.mapviewpoint.utils.PermissionsHelper.REQUEST_CODE_LOCATION_PERMISSION
-import com.example.mapviewpoint.utils.Utils
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -77,7 +73,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(callback)
 
-        viewModelInstantiation()
+        injectDependencies()
         requestPermissions()
         observeDatePicker()
         observeMyCurrentLocation()
@@ -136,7 +132,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
             map.addMarker(MarkerOptions().position(it))
         }*/
         coordinates.forEach { coord ->
-            val marker = map.addMarker(MarkerOptions().position(coord))
+            val marker = map.addMarker(MarkerOptions().position(coord).title("Marker"))
             marker?.isFlat = true
         }
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates.first(), 16f))
@@ -217,7 +213,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
     }
 
-    private fun viewModelInstantiation() {
+    private fun injectDependencies() {
         (requireContext().applicationContext as App).appComponent.inject(this)
         val viewModelProvider = ViewModelProvider(this, viewModelFactory)
         sharedViewModel = viewModelProvider.get(SharedViewModel::class.java)

@@ -1,8 +1,6 @@
 package com.example.mapviewpoint.usecase
 
-import com.example.mapviewpoint.model.GpsCoordinates
 import com.example.mapviewpoint.repository.FakeAuthenticationRepository
-import com.example.mapviewpoint.repository.FakeGpsCoordinatesRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

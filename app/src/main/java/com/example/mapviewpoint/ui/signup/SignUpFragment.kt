@@ -8,11 +8,12 @@ import android.view.View
 import android.widget.Toast
 import com.example.mapviewpoint.R
 import com.example.mapviewpoint.app.App
-import com.example.mapviewpoint.base.checkFieldsForButtonColor
-import com.example.mapviewpoint.base.hideKeyboard
-import com.example.mapviewpoint.base.openScreen
-import com.example.mapviewpoint.base.viewBinding
+import com.example.mapviewpoint.extentions.hideKeyboard
+import com.example.mapviewpoint.extentions.openScreen
+import com.example.mapviewpoint.extentions.viewBinding
 import com.example.mapviewpoint.databinding.FragmentSignUpBinding
+import com.example.mapviewpoint.extentions.isEmailAndPasswordValid
+import com.example.mapviewpoint.extentions.onTextChanged
 import com.example.mapviewpoint.network.RequestResult
 import javax.inject.Inject
 
@@ -26,36 +27,34 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModelInstanciation()
+        injectDependencies()
         editTextChangeListener()
         observeRegistration()
         registerButtonListener()
     }
 
-    private fun viewModelInstanciation() {
+    private fun injectDependencies() {
         (requireContext().applicationContext as App).appComponent.inject(this)
     }
 
     private fun editTextChangeListener() {
-        binding.emailEt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(p0: Editable?) {
-                checkFieldsForButtonColor(binding.emailEt, binding.passwordEt, binding.submitBtn)
+        binding.emailEt.onTextChanged {
+            val email = binding.emailEt.text.toString().trim()
+            val password = binding.passwordEt.text.toString().trim()
+            if (isEmailAndPasswordValid(email, password)) {
+                binding.submitBtn.setBackgroundColor(binding.submitBtn.context.getColor(R.color.colorAccent))
+                binding.submitBtn.isEnabled = true
             }
-        })
+        }
 
-        binding.passwordEt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(p0: Editable?) {
-                checkFieldsForButtonColor(binding.emailEt, binding.passwordEt, binding.submitBtn)
+        binding.passwordEt.onTextChanged {
+            val email = binding.emailEt.text.toString().trim()
+            val password = binding.passwordEt.text.toString().trim()
+            if (isEmailAndPasswordValid(email, password)) {
+                binding.submitBtn.setBackgroundColor(binding.submitBtn.context.getColor(R.color.colorAccent))
+                binding.submitBtn.isEnabled = true
             }
-        })
+        }
     }
 
     private fun registerButtonListener() {
@@ -80,16 +79,17 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
 
     private fun observeRegistration() {
         signUpViewModel.getSignUpResultLiveData().observe(viewLifecycleOwner) { result ->
-            when(result){
+            when (result) {
                 is RequestResult.Success -> {
                     openScreen(SignUpFragmentDirections.actionSignUpFragmentToSignInFragment())
                 }
+
                 is RequestResult.Error -> {
                     Toast.makeText(context, "", Toast.LENGTH_LONG).show()
                 }
+
                 is RequestResult.Loading -> Unit
             }
         }
     }
-
 }

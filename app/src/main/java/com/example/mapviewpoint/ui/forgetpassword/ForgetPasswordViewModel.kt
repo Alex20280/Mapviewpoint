@@ -35,10 +35,10 @@ class ForgetPasswordViewModel @Inject constructor(
             val result = task.result
             when (result) {
                 is RequestResult.Success -> {
-                    resetPasswordResult.value = result
+                    resetPasswordResult.postValue(result)
                 }
                 is RequestResult.Error -> {
-                    resetPasswordResult.value = RequestResult.Error(result.errorData, result.code)
+                    resetPasswordResult.postValue(RequestResult.Error(result.errorData, result.code))
                 }
                 is RequestResult.Loading -> Unit
             }

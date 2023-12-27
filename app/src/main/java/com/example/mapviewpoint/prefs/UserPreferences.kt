@@ -1,8 +1,7 @@
 package com.example.mapviewpoint.prefs
 
 import android.content.Context
-import com.example.mapviewpoint.base.getStringNotNull
-import com.example.mapviewpoint.base.saveString
+import com.example.mapviewpoint.extentions.saveString
 import javax.inject.Inject
 
 class UserPreferences @Inject constructor(

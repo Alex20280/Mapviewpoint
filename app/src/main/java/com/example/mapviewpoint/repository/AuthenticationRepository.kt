@@ -1,6 +1,5 @@
 package com.example.mapviewpoint.repository
 
-import com.example.mapviewpoint.network.ErrorDto
 import com.example.mapviewpoint.network.RequestResult
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult

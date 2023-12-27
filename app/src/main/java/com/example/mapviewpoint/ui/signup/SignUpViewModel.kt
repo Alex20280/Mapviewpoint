@@ -60,7 +60,7 @@ class SignUpViewModel @Inject constructor(
     private fun checkSignUpResponse(response: RequestResult<Task<AuthResult>>) {
         when (response) {
             is RequestResult.Success -> {
-                signUpResult.value = response
+                signUpResult.postValue(response)
             }
             is RequestResult.Error -> {
                 signUpResult.postValue(RequestResult.Error(response.errorData, response.code))

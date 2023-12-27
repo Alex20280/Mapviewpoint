@@ -3,22 +3,18 @@ package com.example.mapviewpoint.ui.forgetpassword
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
-import androidx.lifecycle.viewModelScope
 import com.example.mapviewpoint.R
 import com.example.mapviewpoint.app.App
-import com.example.mapviewpoint.base.checkFieldsForButtonColor
-import com.example.mapviewpoint.base.hideKeyboard
-import com.example.mapviewpoint.base.openScreen
-import com.example.mapviewpoint.base.viewBinding
+import com.example.mapviewpoint.extentions.hideKeyboard
+import com.example.mapviewpoint.extentions.openScreen
+import com.example.mapviewpoint.extentions.viewBinding
 import com.example.mapviewpoint.databinding.FragmentForgetPasswordBinding
+import com.example.mapviewpoint.extentions.isEmailAndPasswordValid
+import com.example.mapviewpoint.extentions.onTextChanged
 import com.example.mapviewpoint.network.RequestResult
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ForgetPasswordFragment : Fragment(R.layout.fragment_forget_password) {
@@ -31,27 +27,25 @@ class ForgetPasswordFragment : Fragment(R.layout.fragment_forget_password) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModelInstantiation()
+        injectDependencies()
         editTextChangeListener()
         observeSubmitClick()
         observePasswordResetResult()
     }
 
-    private fun viewModelInstantiation() {
+    private fun injectDependencies() {
         (requireContext().applicationContext as App).appComponent.inject(this)
     }
 
     private fun editTextChangeListener() {
-        binding.resetPasswordEt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(p0: Editable?) {
-                checkFieldsForButtonColor(binding.resetPasswordEt, binding.resetPasswordEt, binding.submitBtn)
+        binding.resetPasswordEt.onTextChanged {
+            val email= binding.resetPasswordEt.text.toString().trim()
+            val password = binding.resetPasswordEt.text.toString().trim()
+            if (isEmailAndPasswordValid(email, password)){
+                binding.submitBtn.setBackgroundColor(binding.submitBtn.context.getColor(R.color.colorAccent))
+                binding.submitBtn.isEnabled = true
             }
-        })
-
+        }
     }
 
     private fun observeSubmitClick() {
@@ -90,7 +84,4 @@ class ForgetPasswordFragment : Fragment(R.layout.fragment_forget_password) {
     private fun navigateToSignInPage() {
         openScreen(ForgetPasswordFragmentDirections.actionForgetPasswordFragmentToSignInFragment())
     }
-
-
-
 }

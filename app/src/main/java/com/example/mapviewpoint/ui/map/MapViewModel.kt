@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MapViewModel @Inject constructor(
-    private val userPreferences: UserPreferences,
     private val receiveCoordinatesUseCase: GetLocationCoordinatesInTimeRangeUseCase,
     private val getDailyLocationCoordinateUseCase: GetDailyLocationCoordinateUseCase,
     private val currentLocationUseCase: GetCurrentLocationUseCase
@@ -35,16 +34,12 @@ class MapViewModel @Inject constructor(
         return currentCoordinates
     }
 
-    fun getUserId(): String {
-        return userPreferences.getUserId().toString()
-    }
-
     fun getCurrentLocation()  {
         viewModelScope.launch {
             val location = currentLocationUseCase.getCurrentLocation()
             val currentList = currentCoordinates.value?.toMutableList() ?: mutableListOf()
             currentList.add(location)
-            currentCoordinates.value = currentList.toList()
+            currentCoordinates.value= currentList.toList()
         }
     }
 

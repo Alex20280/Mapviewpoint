@@ -1,4 +1,4 @@
-package com.example.mapviewpoint.base
+package com.example.mapviewpoint.extentions
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections

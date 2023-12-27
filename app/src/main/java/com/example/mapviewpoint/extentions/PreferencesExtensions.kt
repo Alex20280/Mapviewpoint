@@ -1,4 +1,4 @@
-package com.example.mapviewpoint.base
+package com.example.mapviewpoint.extentions
 
 import android.content.SharedPreferences
 

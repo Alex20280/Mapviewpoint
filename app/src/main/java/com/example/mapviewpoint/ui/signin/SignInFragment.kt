@@ -5,14 +5,16 @@ import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import com.example.mapviewpoint.R
 import com.example.mapviewpoint.app.App
-import com.example.mapviewpoint.base.checkFieldsForButtonColor
-import com.example.mapviewpoint.base.hideKeyboard
-import com.example.mapviewpoint.base.openScreen
-import com.example.mapviewpoint.base.viewBinding
+import com.example.mapviewpoint.extentions.hideKeyboard
+import com.example.mapviewpoint.extentions.openScreen
+import com.example.mapviewpoint.extentions.viewBinding
 import com.example.mapviewpoint.databinding.FragmentSignInBinding
+import com.example.mapviewpoint.extentions.isEmailAndPasswordValid
+import com.example.mapviewpoint.extentions.onTextChanged
 import com.example.mapviewpoint.network.RequestResult
 import javax.inject.Inject
 
@@ -26,7 +28,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModelInstanciation()
+        injectDependencies()
         navigateToSignUpPage()
         editTextChangeListener()
         navigateToForgetPasswordScreen()
@@ -38,9 +40,10 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         signInViewModel.getSignInResultLiveData().observe(viewLifecycleOwner) { result ->
             when (result) {
                 is RequestResult.Success -> {
+                    hideProgressbar()
                     navigateToMapPage()
                     //signInViewModel!!.saveUserId(result.data.result.user?.uid.toString())
-                   // Log.d("userIdKey", signInViewModel!!.getSomeGetUserId())
+                    // Log.d("userIdKey", signInViewModel!!.getSomeGetUserId())
                 }
 
                 is RequestResult.Error -> {
@@ -54,29 +57,26 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     }
 
     private fun editTextChangeListener() {
-        binding.editTextEmail.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        binding.editTextEmail.onTextChanged {
+            val email = binding.editTextEmail.text.toString().trim()
+            val password = binding.editTextPassword.text.toString().trim()
+            if (isEmailAndPasswordValid(email, password))
+                binding.button.setBackgroundColor(binding.button.context.getColor(R.color.colorAccent))
+            binding.button.isEnabled = true
+        }
 
-            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(p0: Editable?) {
-                checkFieldsForButtonColor(binding.editTextEmail, binding.editTextPassword, binding.button)
-            }
-        })
-
-        binding.editTextPassword.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(p0: Editable?) {
-                checkFieldsForButtonColor(binding.editTextEmail, binding.editTextPassword, binding.button)
-            }
-        })
+        binding.editTextPassword.onTextChanged {
+            val email = binding.editTextEmail.text.toString().trim()
+            val password = binding.editTextPassword.text.toString().trim()
+            if (isEmailAndPasswordValid(email, password))
+                binding.button.setBackgroundColor(binding.button.context.getColor(R.color.colorAccent))
+            binding.button.isEnabled = true
+        }
     }
 
     private fun observeSubmitClick() {
         binding.button.setOnClickListener {
+            showProgressbar()
             hideKeyboard()
             val email: String = binding.editTextEmail.text?.toString() ?: ""
             val password: String = binding.editTextPassword.text?.toString() ?: ""
@@ -96,10 +96,17 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         }
     }
 
+    private fun showProgressbar() {
+        binding.progressBar.visibility = View.VISIBLE
+    }
 
-    private fun viewModelInstanciation() {
+    private fun hideProgressbar() {
+        binding.progressBar.visibility = View.GONE
+    }
+
+    private fun injectDependencies() {
         (requireContext().applicationContext as App).appComponent.inject(this)
-     }
+    }
 
 
     private fun navigateToSignUpPage() {

@@ -1,6 +1,5 @@
 package com.example.mapviewpoint.usecase
 
-import androidx.test.runner.AndroidJUnit4
 import com.example.mapviewpoint.model.GpsCoordinates
 import com.example.mapviewpoint.repository.FakeGpsCoordinatesRepository
 import io.mockk.coEvery
@@ -9,9 +8,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
-
 import org.junit.Test
-import org.junit.runner.RunWith
 
 class GetDailyLocationCoordinateUseCaseTest {
 

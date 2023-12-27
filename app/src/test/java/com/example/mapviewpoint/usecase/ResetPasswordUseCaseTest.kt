@@ -1,6 +1,6 @@
 package com.example.mapviewpoint.usecase
 
-import com.example.mapviewpoint.network.ErrorDto
+import com.example.mapviewpoint.network.ErrorResponse
 import com.example.mapviewpoint.network.RequestResult
 import com.example.mapviewpoint.repository.FakeAuthenticationRepository
 import com.google.android.gms.tasks.Task
@@ -50,7 +50,7 @@ class ResetPasswordUseCaseTest {
     @Test
     fun `should return reset password fail result`() = runBlocking {
 
-        val expectedResetResult = RequestResult.Error(ErrorDto.Default("Reset problem"), 0)
+        val expectedResetResult = RequestResult.Error(ErrorResponse.Default("Reset problem"), 0)
         val emailAddress = "test@gmail.com"
 
         val fakeResetResultTask: Task<RequestResult<Unit>> = Tasks.forResult(expectedResetResult)

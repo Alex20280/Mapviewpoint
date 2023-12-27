@@ -1,6 +1,6 @@
 package com.example.mapviewpoint.usecase
 
-import com.example.mapviewpoint.network.ErrorDto
+import com.example.mapviewpoint.network.ErrorResponse
 import com.example.mapviewpoint.network.RequestResult
 import com.example.mapviewpoint.repository.FakeAuthenticationRepository
 import io.mockk.coEvery
@@ -46,7 +46,7 @@ class UserLogOutUseCaseTest {
     fun `should return log out fail result`() = runBlocking {
 
         // Stub coordinates
-        val expectedLoginResult = RequestResult.Error(ErrorDto.Default("Logout problem"), 0)
+        val expectedLoginResult = RequestResult.Error(ErrorResponse.Default("Logout problem"), 0)
 
         coEvery { mockRepo.logout() } returns expectedLoginResult
 

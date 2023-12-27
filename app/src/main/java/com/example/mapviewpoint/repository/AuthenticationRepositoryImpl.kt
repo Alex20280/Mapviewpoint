@@ -1,6 +1,6 @@
 package com.example.mapviewpoint.repository
 
-import com.example.mapviewpoint.network.ErrorDto
+import com.example.mapviewpoint.network.ErrorResponse
 import com.example.mapviewpoint.network.RequestResult
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
@@ -17,7 +17,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
             return RequestResult.Success(authResultTask)
         } catch (e: Exception) {
             // Handle exceptions here
-            return RequestResult.Error(ErrorDto.Default("Registration problem"), 0)
+            return RequestResult.Error(ErrorResponse.Default("Registration problem"), 0)
         }
     }
 
@@ -29,7 +29,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
             RequestResult.Success(authResultTask.result)
         } catch (e: Exception) {
             // Handle exceptions and errors here
-            RequestResult.Error(ErrorDto.Default("Login problem"), 0)
+            RequestResult.Error(ErrorResponse.Default("Login problem"), 0)
         }
     }
 
@@ -39,7 +39,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
             if (task.isSuccessful) {
                 RequestResult.Success(Unit)
             } else {
-                RequestResult.Error(ErrorDto.Default("Reset problem"), 0)
+                RequestResult.Error(ErrorResponse.Default("Reset problem"), 0)
             }
         }
     }
@@ -49,7 +49,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
             val logoutResult = auth.signOut()
             return RequestResult.Success(logoutResult)
         } catch (e: Exception) {
-            return RequestResult.Error(ErrorDto.Default("Logout problem"), 0)
+            return RequestResult.Error(ErrorResponse.Default("Logout problem"), 0)
         }
     }
 
