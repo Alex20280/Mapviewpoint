@@ -1,7 +1,11 @@
 package com.example.mapviewpoint.repository
 
 import android.annotation.SuppressLint
+import android.os.Looper
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject

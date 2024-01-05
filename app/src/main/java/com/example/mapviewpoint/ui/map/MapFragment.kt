@@ -1,9 +1,13 @@
 package com.example.mapviewpoint.ui.map
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -24,18 +28,18 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.maps.android.SphericalUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import javax.inject.Inject
 
-class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionCallbacks  {
+class MapFragment : Fragment(R.layout.fragment_map)  {
 
     private val binding by viewBinding(FragmentMapBinding::bind)
     private lateinit var map: GoogleMap
+    private val LOCATION_PERMISSION_REQUEST_CODE = 123
+    private var actionToPerformAfterPermissionGranted: (() -> Unit)? = null
 
     @Inject
     lateinit var mapViewModel: MapViewModel
@@ -74,7 +78,6 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
         mapFragment.getMapAsync(callback)
 
         injectDependencies()
-        requestPermissions()
         observeDatePicker()
         observeMyCurrentLocation()
         iconClickListener()
@@ -83,6 +86,42 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
         observeChosenDateCoordinates()
         observeUserLogout()
     }
+
+    private fun checkLocationPermissions(): Boolean {
+        return (ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED)
+    }
+
+    private fun requestLocationPermissions() {
+        requestPermissions(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE &&
+            grantResults.isNotEmpty() &&
+            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        ) {
+            actionToPerformAfterPermissionGranted?.invoke()
+        }
+    }
+
 
     private fun observeUserLogout() {
         sharedViewModel.getLogOutState.observe(viewLifecycleOwner) { result ->
@@ -102,6 +141,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
         }
     }
 
+
     private fun observeMyCurrentLocation() {
         mapViewModel.getCurrentCoordinates().observe(viewLifecycleOwner){
             updateMap(it)
@@ -110,8 +150,30 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
     private fun currentLocationListener() {
         binding.fab.setOnClickListener {
-            getMyCurrentLocation()
+            if (checkLocationPermissions()) {
+                val isGpsEnabled = mapViewModel.isLocationEnabled()
+                if (!isGpsEnabled) {
+                    locationServiceDialogShow()
+                }
+                getMyCurrentLocation()
+            } else {
+                requestLocationPermissions()
+                actionToPerformAfterPermissionGranted = ::getMyCurrentLocation
+            }
         }
+    }
+
+    private fun locationServiceDialogShow() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("GPS Disabled")
+            .setMessage("Please enable location services to allow tracking")
+            .setPositiveButton("Enable") { _, _ ->
+                mapViewModel.requestLocationEnable()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun getMyCurrentLocation() {
@@ -143,7 +205,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
     }
 
     //TODO should be removed (only for debugging)
-    private fun reduceCoordinateDensity(originalCoords: List<LatLng>, distance: Double): List<LatLng> {
+/*    private fun reduceCoordinateDensity(originalCoords: List<LatLng>, distance: Double): List<LatLng> {
 
         val filteredCoords = ArrayList<LatLng>()
         var prevCoord: LatLng? = null
@@ -156,20 +218,7 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
         }
 
         return filteredCoords
-    }
-
-    private fun requestPermissions(){
-        if (PermissionsHelper.hasLocationPermission(requireContext()))
-            return
-
-        EasyPermissions.requestPermissions(
-            this,
-            "You need to accept location permission",
-            REQUEST_CODE_LOCATION_PERMISSION,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-            android.Manifest.permission.ACCESS_FINE_LOCATION
-        )
-    }
+    }*/
 
     fun GpsCoordinates.toLatLng(): LatLng {
         return LatLng(latitude, longitude)
@@ -180,7 +229,6 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
             Log.d("MyOnwObserver", "Coordinates changed: $it")
             val latLngs = it.map { it.toLatLng() }
             updateMap(latLngs)
-
         }
     }
 
@@ -193,9 +241,18 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
 
     private fun iconClickListener() {
         binding.icon.setOnClickListener{
-            CoroutineScope(Dispatchers.IO).launch {
-                mapViewModel.getGpsCoordinatesByLast24Hours()
+            if (checkLocationPermissions()) {
+                getGpsCoordinatesByLast24Hours()
+            } else {
+                requestLocationPermissions()
+                actionToPerformAfterPermissionGranted = ::getGpsCoordinatesByLast24Hours
             }
+        }
+    }
+
+    private fun getGpsCoordinatesByLast24Hours(){
+        CoroutineScope(Dispatchers.IO).launch {
+            mapViewModel.getGpsCoordinatesByLast24Hours()
         }
     }
 
@@ -203,39 +260,18 @@ class MapFragment : Fragment(R.layout.fragment_map), EasyPermissions.PermissionC
         openScreen(MapFragmentDirections.actionMapFragmentToSignInFragment())
     }
 
-
     private fun observeDatePicker() {
         sharedViewModel.selectedDate.observe(requireActivity()){
             CoroutineScope(Dispatchers.IO).launch {
                 mapViewModel.getGpsCoordinatesByTime(it)
             }
         }
-
     }
 
     private fun injectDependencies() {
         (requireContext().applicationContext as App).appComponent.inject(this)
         val viewModelProvider = ViewModelProvider(this, viewModelFactory)
         sharedViewModel = viewModelProvider.get(SharedViewModel::class.java)
-    }
-
-    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-       if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)){
-           AppSettingsDialog.Builder(this).build().show()
-       } else {
-           requestPermissions()
-       }
-    }
-
-    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {}
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
 }

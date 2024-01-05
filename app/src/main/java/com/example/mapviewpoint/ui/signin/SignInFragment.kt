@@ -60,17 +60,29 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         binding.editTextEmail.onTextChanged {
             val email = binding.editTextEmail.text.toString().trim()
             val password = binding.editTextPassword.text.toString().trim()
-            if (isEmailAndPasswordValid(email, password))
-                binding.button.setBackgroundColor(binding.button.context.getColor(R.color.colorAccent))
-            binding.button.isEnabled = true
+            binding.button.isEnabled = isEmailAndPasswordValid(email, password)
+            if (email.isEmpty() || password.isEmpty()) {
+                binding.button.isEnabled = false
+            }
+            updateButtonState()
         }
 
         binding.editTextPassword.onTextChanged {
             val email = binding.editTextEmail.text.toString().trim()
             val password = binding.editTextPassword.text.toString().trim()
-            if (isEmailAndPasswordValid(email, password))
-                binding.button.setBackgroundColor(binding.button.context.getColor(R.color.colorAccent))
-            binding.button.isEnabled = true
+            binding.button.isEnabled = isEmailAndPasswordValid(email, password)
+            if (email.isEmpty() || password.isEmpty()) {
+                binding.button.isEnabled = false
+            }
+            updateButtonState()
+        }
+    }
+
+    private fun updateButtonState() {
+        if (binding.button.isEnabled) {
+            binding.button.setBackgroundColor(binding.button.context.getColor(R.color.colorAccent))
+        } else {
+            binding.button.setBackgroundColor(binding.button.context.getColor(R.color.grey))
         }
     }
 
