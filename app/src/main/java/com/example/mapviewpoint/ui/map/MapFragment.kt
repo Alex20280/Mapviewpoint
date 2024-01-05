@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.EasyPermissions
 import javax.inject.Inject
 
-class MapFragment : Fragment(R.layout.fragment_map)  {
+class MapFragment : Fragment(R.layout.fragment_map) {
 
     private val binding by viewBinding(FragmentMapBinding::bind)
     private lateinit var map: GoogleMap
@@ -60,12 +60,12 @@ class MapFragment : Fragment(R.layout.fragment_map)  {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-/*        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
+        /*        val sydney = LatLng(-34.0, 151.0)
+                googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
 
-/*        val sydney = LatLng(-37.0, 153.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))*/
+        /*        val sydney = LatLng(-37.0, 153.0)
+                googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))*/
         //getMyCurrentLocation()
         //googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
@@ -130,11 +130,16 @@ class MapFragment : Fragment(R.layout.fragment_map)  {
                     is RequestResult.Success -> {
                         sharedViewModel.setLogOutState(RequestResult.Loading)
                         navigateToSignInPage()
-                        resetMap()
                     }
+
                     is RequestResult.Error -> {
-                        Toast.makeText(requireContext(), "Error with logging out", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Error with logging out",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
+
                     is RequestResult.Loading -> Unit
                 }
             }
@@ -143,13 +148,14 @@ class MapFragment : Fragment(R.layout.fragment_map)  {
 
 
     private fun observeMyCurrentLocation() {
-        mapViewModel.getCurrentCoordinates().observe(viewLifecycleOwner){
+        mapViewModel.getCurrentCoordinates().observe(viewLifecycleOwner) {
             updateMap(it)
         }
     }
 
     private fun currentLocationListener() {
         binding.fab.setOnClickListener {
+            showProgressBar()
             if (checkLocationPermissions()) {
                 val isGpsEnabled = mapViewModel.isLocationEnabled()
                 if (!isGpsEnabled) {
@@ -177,22 +183,25 @@ class MapFragment : Fragment(R.layout.fragment_map)  {
     }
 
     private fun getMyCurrentLocation() {
-       mapViewModel.getCurrentLocation()
+        mapViewModel.getCurrentLocation()
     }
 
 
     private fun updateMap(coordinates: List<LatLng>) {
-        if(coordinates.isEmpty()) {
-            Toast.makeText(requireContext(), "No location coordinates found for this date", Toast.LENGTH_SHORT).show()
+        hideProgressBar()
+        if (coordinates.isEmpty()) {
+            Toast.makeText(
+                requireContext(),
+                "No location coordinates found for this date",
+                Toast.LENGTH_SHORT
+            ).show()
+            resetMap()
             return
         }
         //val reducedCoords = reduceCoordinateDensity(coordinates, 10.0)
-        //map.clear()
+
         resetMap()
 
-/*        coordinates.forEach() {
-            map.addMarker(MarkerOptions().position(it))
-        }*/
         coordinates.forEach { coord ->
             val marker = map.addMarker(MarkerOptions().position(coord).title("Marker"))
             marker?.isFlat = true
@@ -200,57 +209,59 @@ class MapFragment : Fragment(R.layout.fragment_map)  {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates.first(), 16f))
     }
 
-    private fun resetMap(){
+    private fun resetMap() {
         map.clear()
     }
 
     //TODO should be removed (only for debugging)
-/*    private fun reduceCoordinateDensity(originalCoords: List<LatLng>, distance: Double): List<LatLng> {
+    /*    private fun reduceCoordinateDensity(originalCoords: List<LatLng>, distance: Double): List<LatLng> {
 
-        val filteredCoords = ArrayList<LatLng>()
-        var prevCoord: LatLng? = null
+            val filteredCoords = ArrayList<LatLng>()
+            var prevCoord: LatLng? = null
 
-        originalCoords.forEach { coord ->
-            if (prevCoord == null || SphericalUtil.computeDistanceBetween(prevCoord,coord) >= distance) {
-                filteredCoords.add(coord)
-                prevCoord = coord
+            originalCoords.forEach { coord ->
+                if (prevCoord == null || SphericalUtil.computeDistanceBetween(prevCoord,coord) >= distance) {
+                    filteredCoords.add(coord)
+                    prevCoord = coord
+                }
             }
-        }
 
-        return filteredCoords
-    }*/
+            return filteredCoords
+        }*/
 
     fun GpsCoordinates.toLatLng(): LatLng {
         return LatLng(latitude, longitude)
     }
 
     private fun observeChosenDateCoordinates() {
-        mapViewModel.getChosenDateCoordinates().observe(viewLifecycleOwner){
+        mapViewModel.getChosenDateCoordinates().observe(viewLifecycleOwner) {
             Log.d("MyOnwObserver", "Coordinates changed: $it")
-            val latLngs = it.map { it.toLatLng() }
-            updateMap(latLngs)
+            val location = it.map { it.toLatLng() }
+            updateMap(location)
         }
     }
 
     private fun observeTwentyFourHoursCoordinates() {
-        mapViewModel.getTwentyFourHoursCoordinates().observe(viewLifecycleOwner){
-            val latLngs = it.map { it.toLatLng() }
-            updateMap(latLngs)
+        mapViewModel.getTwentyFourHoursCoordinates().observe(viewLifecycleOwner) {
+            val location = it.map { it.toLatLng() }
+            updateMap(location)
         }
     }
 
     private fun iconClickListener() {
-        binding.icon.setOnClickListener{
+        binding.icon.setOnClickListener {
+            showProgressBar()
             if (checkLocationPermissions()) {
                 getGpsCoordinatesByLast24Hours()
             } else {
+                resetMap()
                 requestLocationPermissions()
                 actionToPerformAfterPermissionGranted = ::getGpsCoordinatesByLast24Hours
             }
         }
     }
 
-    private fun getGpsCoordinatesByLast24Hours(){
+    private fun getGpsCoordinatesByLast24Hours() {
         CoroutineScope(Dispatchers.IO).launch {
             mapViewModel.getGpsCoordinatesByLast24Hours()
         }
@@ -261,7 +272,7 @@ class MapFragment : Fragment(R.layout.fragment_map)  {
     }
 
     private fun observeDatePicker() {
-        sharedViewModel.selectedDate.observe(requireActivity()){
+        sharedViewModel.selectedDate.observe(requireActivity()) {
             CoroutineScope(Dispatchers.IO).launch {
                 mapViewModel.getGpsCoordinatesByTime(it)
             }
@@ -272,6 +283,14 @@ class MapFragment : Fragment(R.layout.fragment_map)  {
         (requireContext().applicationContext as App).appComponent.inject(this)
         val viewModelProvider = ViewModelProvider(this, viewModelFactory)
         sharedViewModel = viewModelProvider.get(SharedViewModel::class.java)
+    }
+
+    private fun showProgressBar() {
+        binding.mapProgressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        binding.mapProgressBar.visibility = View.INVISIBLE
     }
 
 }
