@@ -12,13 +12,10 @@ import com.example.mapviewpoint.app.App
 import com.example.mapviewpoint.databinding.ActivityMainBinding
 import com.example.mapviewpoint.di.ViewModelFactory
 import com.example.mapviewpoint.ui.map.ToolbarIconClickListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), ToolbarIconClickListener {
+class MainActivity: AppCompatActivity(), ToolbarIconClickListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -39,7 +36,7 @@ class MainActivity : AppCompatActivity(), ToolbarIconClickListener {
     private fun viewModelInstantiation() {
         (applicationContext.applicationContext as App).appComponent.inject(this)
         val viewModelProvider = ViewModelProvider(this, viewModelFactory)
-        sharedViewModel = viewModelProvider.get(SharedViewModel::class.java)
+        sharedViewModel = viewModelProvider[SharedViewModel::class.java]
     }
 
     private fun initializeNavigation() {
@@ -140,13 +137,13 @@ class MainActivity : AppCompatActivity(), ToolbarIconClickListener {
         val datePickerDialog = DatePickerDialog(
             this,
             { _, selectedYear, selectedMonth, selectedDay ->
-                val selectedCalendar = Calendar.getInstance() //TimeZone.getDefault()
+                val selectedCalendar = Calendar.getInstance()
 
                 selectedCalendar.set(selectedYear, selectedMonth, selectedDay)
-                selectedCalendar.set(Calendar.HOUR_OF_DAY, 0) // Set hour to 0
-                selectedCalendar.set(Calendar.MINUTE, 0) // Set minute to 0
-                selectedCalendar.set(Calendar.SECOND, 0) // Set second to 0
-                selectedCalendar.set(Calendar.MILLISECOND, 0) // Set millisecond to 0
+                selectedCalendar.set(Calendar.HOUR_OF_DAY, 0)
+                selectedCalendar.set(Calendar.MINUTE, 0)
+                selectedCalendar.set(Calendar.SECOND, 0)
+                selectedCalendar.set(Calendar.MILLISECOND, 0)
 
                 val timestamp = selectedCalendar.timeInMillis
                 sharedViewModel.setSelectedDate(timestamp)

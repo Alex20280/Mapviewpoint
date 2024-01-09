@@ -1,8 +1,6 @@
 package com.example.mapviewpoint.ui.forgetpassword
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -13,6 +11,7 @@ import com.example.mapviewpoint.extentions.openScreen
 import com.example.mapviewpoint.extentions.viewBinding
 import com.example.mapviewpoint.databinding.FragmentForgetPasswordBinding
 import com.example.mapviewpoint.extentions.isEmailAndPasswordValid
+import com.example.mapviewpoint.extentions.isEmailValid
 import com.example.mapviewpoint.extentions.onTextChanged
 import com.example.mapviewpoint.network.RequestResult
 import javax.inject.Inject
@@ -40,8 +39,7 @@ class ForgetPasswordFragment : Fragment(R.layout.fragment_forget_password) {
     private fun editTextChangeListener() {
         binding.resetPasswordEt.onTextChanged {
             val email= binding.resetPasswordEt.text.toString().trim()
-            val password = binding.resetPasswordEt.text.toString().trim()
-            if (isEmailAndPasswordValid(email, password)){
+            if (isEmailValid(email)){
                 binding.submitBtn.setBackgroundColor(binding.submitBtn.context.getColor(R.color.colorAccent))
                 binding.submitBtn.isEnabled = true
             }
@@ -56,12 +54,10 @@ class ForgetPasswordFragment : Fragment(R.layout.fragment_forget_password) {
             if (forgetPasswordViewModel.isValidEmail(email)) {
                 forgetPasswordViewModel.resetPassword(email)
             } else {
-                // Show error messages or UI feedback for invalid input
                 if (forgetPasswordViewModel.isValidEmail(email)) {
                     binding.resetPasswordEt.error = getString(R.string.invalid_email_warning)
                 }
             }
-
         }
     }
 
@@ -71,11 +67,9 @@ class ForgetPasswordFragment : Fragment(R.layout.fragment_forget_password) {
                 is RequestResult.Success -> {
                     navigateToSignInPage()
                 }
-
                 is RequestResult.Error -> {
-                    Toast.makeText(context, "Login Error", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, getString(R.string.login_error), Toast.LENGTH_LONG).show()
                 }
-
                 is RequestResult.Loading -> Unit
             }
         }

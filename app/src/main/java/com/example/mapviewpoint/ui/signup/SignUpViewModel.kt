@@ -27,36 +27,6 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun isValidEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
-
-    fun isValidPassword(password: String): Boolean {
-        // Password should be at least 8 characters long
-        if (password.length < 8) {
-            return false
-        }
-
-        // Check for at least one uppercase letter
-        val uppercasePattern = "[A-Z]".toRegex()
-        if (!uppercasePattern.containsMatchIn(password)) {
-            return false
-        }
-
-        // Check for at least one digit
-        val digitPattern = "\\d".toRegex()
-        if (!digitPattern.containsMatchIn(password)) {
-            return false
-        }
-
-        // Check for at least one special character
-        val specialCharacterPattern = "[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]".toRegex()
-        if (!specialCharacterPattern.containsMatchIn(password)) {
-            return false
-        }
-        return true
-    }
-
     private fun checkSignUpResponse(response: RequestResult<Task<AuthResult>>) {
         when (response) {
             is RequestResult.Success -> {

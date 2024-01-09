@@ -1,7 +1,6 @@
 package com.example.mapviewpoint.di
 
 import com.example.mapviewpoint.MainActivity
-import com.example.mapviewpoint.SharedViewModel
 import com.example.mapviewpoint.ui.forgetpassword.ForgetPasswordFragment
 import com.example.mapviewpoint.ui.map.MapFragment
 import com.example.mapviewpoint.ui.signin.SignInFragment

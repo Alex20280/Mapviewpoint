@@ -2,8 +2,6 @@ package com.example.mapviewpoint.di
 
 import android.content.Context
 import com.example.mapviewpoint.prefs.UserPreferences
-import com.example.mapviewpoint.repository.LocationTrackerRepository
-import com.example.mapviewpoint.repository.LocationTrackerRepositoryImpl
 import dagger.Module
 import dagger.Provides
 

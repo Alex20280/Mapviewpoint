@@ -32,8 +32,7 @@ class ForgetPasswordViewModel @Inject constructor(
 
     private fun checkPasswordResetResponse(response:Task<RequestResult<Unit>>) {
         response.addOnCompleteListener { task ->
-            val result = task.result
-            when (result) {
+            when (val result = task.result) {
                 is RequestResult.Success -> {
                     resetPasswordResult.postValue(result)
                 }

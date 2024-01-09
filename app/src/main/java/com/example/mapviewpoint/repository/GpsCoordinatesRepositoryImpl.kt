@@ -8,7 +8,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.util.Calendar
-import java.util.TimeZone
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -36,8 +35,6 @@ class GpsCoordinatesRepositoryImpl @Inject constructor(
                         val longitude = timestampSnapshot.child("long").getValue(Double::class.java)
                         val timestamp =  timestampSnapshot.key?.toLongOrNull()
                         val roundedTimeToADay = getRoundedDay(timestamp!!)
-
-                        //Log.d("myOwnTime", "FirebaseTime: $timestamp, convertedFirebase: $roundedTimeToADay + timepassed: $time")
                         if (latitude != null && longitude != null && time == roundedTimeToADay) {
                             coordinatesList.add(GpsCoordinates(latitude, longitude, timestamp))
                         }
@@ -80,7 +77,6 @@ class GpsCoordinatesRepositoryImpl @Inject constructor(
                         val timestamp =  timestampSnapshot.key?.toLongOrNull()
                         val roundedTimeToADay = getRoundedDay(timestamp!!)
 
-                        //Log.d("myOwnTime", "FirebaseTime: $timestamp, convertedFirebase: $roundedTimeToADay + timepassed: $time")
                         if (latitude != null && longitude != null && lastDay == roundedTimeToADay) {
                             coordinatesList.add(GpsCoordinates(latitude, longitude, timestamp))
                         }

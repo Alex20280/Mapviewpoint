@@ -3,7 +3,6 @@ package com.example.mapviewpoint.extentions
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -11,7 +10,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewbinding.ViewBinding
-import com.example.mapviewpoint.R
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -57,6 +55,34 @@ fun EditText.onTextChanged(listener: (String) -> Unit) {
     }
 }
 
+fun Fragment.isValidPassword(password: String): Boolean {
+    if (password.length < 8) {
+        return false
+    }
+    // Check for at least one uppercase letter
+    val uppercasePattern = "[A-Z]".toRegex()
+    if (!uppercasePattern.containsMatchIn(password)) {
+        return false
+    }
+
+    // Check for at least one digit
+    val digitPattern = "\\d".toRegex()
+    if (!digitPattern.containsMatchIn(password)) {
+        return false
+    }
+
+    // Check for at least one special character
+    val specialCharacterPattern = "[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]".toRegex()
+    if (!specialCharacterPattern.containsMatchIn(password)) {
+        return false
+    }
+    return true
+}
+
+fun  Fragment.isValidEmail(email: String): Boolean {
+    return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+}
+
 fun Fragment.isEmailAndPasswordValid(
     emailEditText: String,
     passwordEditText: String
@@ -66,4 +92,13 @@ fun Fragment.isEmailAndPasswordValid(
     val isPasswordValid = passwordEditText.isNotEmpty()
 
     return isEmailValid && isPasswordValid
+}
+
+fun Fragment.isEmailValid(
+    emailEditText: String
+) : Boolean{
+    val isEmailValid =
+        android.util.Patterns.EMAIL_ADDRESS.matcher(emailEditText).matches() && emailEditText.endsWith(".com")
+
+    return isEmailValid
 }

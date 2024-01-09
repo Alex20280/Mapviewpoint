@@ -9,7 +9,6 @@ import com.example.mapviewpoint.network.RequestResult
 import com.example.mapviewpoint.prefs.UserPreferences
 import com.example.mapviewpoint.usecase.GetUserUidUseCase
 import com.example.mapviewpoint.usecase.UserLoginUseCase
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,11 +22,6 @@ class SignInViewModel @Inject constructor(
     private val signInResult = MutableLiveData<RequestResult<AuthResult>>()
     fun getSignInResultLiveData(): LiveData<RequestResult<AuthResult>> {
         return signInResult
-    }
-
-    private val userId = MutableLiveData<String>()
-    fun getUserId(): LiveData<String> {
-        return userId
     }
 
     fun loginUser(email: String, password: String) {
@@ -53,35 +47,5 @@ class SignInViewModel @Inject constructor(
 
     fun saveUserId(id: String) {
         userPreferences.setUserId(id)
-    }
-
-    fun isValidEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
-
-    fun isValidPassword(password: String): Boolean {
-        // Password should be at least 8 characters long
-        if (password.length < 8) {
-            return false
-        }
-
-        // Check for at least one uppercase letter
-        val uppercasePattern = "[A-Z]".toRegex()
-        if (!uppercasePattern.containsMatchIn(password)) {
-            return false
-        }
-
-        // Check for at least one digit
-        val digitPattern = "\\d".toRegex()
-        if (!digitPattern.containsMatchIn(password)) {
-            return false
-        }
-
-        // Check for at least one special character
-        val specialCharacterPattern = "[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]".toRegex()
-        if (!specialCharacterPattern.containsMatchIn(password)) {
-            return false
-        }
-        return true
     }
 }

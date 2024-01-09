@@ -14,4 +14,12 @@
     <string name="invalid_password_warning">Password must be at least 8 characters, should have digits, latters, special character and at least 1 uppercase letter</string>
     <string name="invalid_email_warning">Invalid email</string>
     <string name="last_24_hours">Last 24 hours</string>
+    <string name="login_error">Login Error</string>
+    <string name="error_with_logging_out">Error with logging out</string>
+    <string name="gps_disabled">GPS Disabled</string>
+    <string name="please_enable_location_services_to_allow_tracking">Please enable location services to allow tracking</string>
+    <string name="enable">Enable</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_location_coordinates_found_for_this_date">No location coordinates found for this date</string>
+    <string name="marker">Marker</string>
 </resources>

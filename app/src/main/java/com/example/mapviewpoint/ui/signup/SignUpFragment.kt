@@ -1,8 +1,6 @@
 package com.example.mapviewpoint.ui.signup
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -13,6 +11,8 @@ import com.example.mapviewpoint.extentions.openScreen
 import com.example.mapviewpoint.extentions.viewBinding
 import com.example.mapviewpoint.databinding.FragmentSignUpBinding
 import com.example.mapviewpoint.extentions.isEmailAndPasswordValid
+import com.example.mapviewpoint.extentions.isValidEmail
+import com.example.mapviewpoint.extentions.isValidPassword
 import com.example.mapviewpoint.extentions.onTextChanged
 import com.example.mapviewpoint.network.RequestResult
 import javax.inject.Inject
@@ -63,14 +63,13 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
             val email: String = binding.emailEt.text?.toString() ?: ""
             val password: String = binding.passwordEt.text?.toString() ?: ""
 
-            if (signUpViewModel.isValidEmail(email) && signUpViewModel.isValidPassword(password)) {
+            if (isValidEmail(email) && isValidPassword(password)) {
                 signUpViewModel.registerUser(email, password)
             } else {
-                // Show error messages or UI feedback for invalid input
-                if (signUpViewModel.isValidEmail(email)) {
+                if (isValidEmail(email)) {
                     binding.emailEt.error = getString(R.string.invalid_email_warning)
                 }
-                if (!signUpViewModel.isValidPassword(password)) {
+                if (!isValidPassword(password)) {
                     binding.passwordEt.error = getString(R.string.invalid_password_warning)
                 }
             }
@@ -83,11 +82,9 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
                 is RequestResult.Success -> {
                     openScreen(SignUpFragmentDirections.actionSignUpFragmentToSignInFragment())
                 }
-
                 is RequestResult.Error -> {
                     Toast.makeText(context, "", Toast.LENGTH_LONG).show()
                 }
-
                 is RequestResult.Loading -> Unit
             }
         }

@@ -16,7 +16,6 @@ class AuthenticationRepositoryImpl @Inject constructor(
             val authResultTask = auth.createUserWithEmailAndPassword(email, password)
             return RequestResult.Success(authResultTask)
         } catch (e: Exception) {
-            // Handle exceptions here
             return RequestResult.Error(ErrorResponse.Default("Registration problem"), 0)
         }
     }
@@ -28,7 +27,6 @@ class AuthenticationRepositoryImpl @Inject constructor(
             // If you reach this point, the task is considered successful
             RequestResult.Success(authResultTask.result)
         } catch (e: Exception) {
-            // Handle exceptions and errors here
             RequestResult.Error(ErrorResponse.Default("Login problem"), 0)
         }
     }

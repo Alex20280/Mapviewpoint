@@ -14,7 +14,6 @@ class UserPreferences @Inject constructor(
         prefs.saveString(USER_ID, id)
     }
 
-    //fun getUserId() = prefs.getStringNotNull(USER_ID)
     fun getUserId(): String? {
         return prefs.getString(USER_ID, null)
     }

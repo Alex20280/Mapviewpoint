@@ -2,11 +2,9 @@ package com.example.mapviewpoint.di
 
 import android.app.Application
 import android.content.Context
-import androidx.lifecycle.ViewModel
 import com.example.mapviewpoint.app.App
 import dagger.Module
 import dagger.Provides
-import javax.inject.Provider
 import javax.inject.Singleton
 
 @Module
@@ -23,5 +21,4 @@ class AppModule(private val application: App) {
     fun provideApplicationContext(application: Application): Context {
         return application.applicationContext
     }
-
 }

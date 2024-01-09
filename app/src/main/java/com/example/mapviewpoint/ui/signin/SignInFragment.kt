@@ -14,6 +14,8 @@ import com.example.mapviewpoint.extentions.openScreen
 import com.example.mapviewpoint.extentions.viewBinding
 import com.example.mapviewpoint.databinding.FragmentSignInBinding
 import com.example.mapviewpoint.extentions.isEmailAndPasswordValid
+import com.example.mapviewpoint.extentions.isValidEmail
+import com.example.mapviewpoint.extentions.isValidPassword
 import com.example.mapviewpoint.extentions.onTextChanged
 import com.example.mapviewpoint.network.RequestResult
 import javax.inject.Inject
@@ -93,14 +95,14 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
             val email: String = binding.editTextEmail.text?.toString() ?: ""
             val password: String = binding.editTextPassword.text?.toString() ?: ""
 
-            if (signInViewModel.isValidEmail(email) && signInViewModel.isValidPassword(password)) {
+            if (isValidEmail(email) && isValidPassword(password)) {
                 signInViewModel.loginUser(email, password)
             } else {
                 // Show error messages or UI feedback for invalid input
-                if (signInViewModel.isValidEmail(email)) {
+                if (isValidEmail(email)) {
                     binding.editTextEmail.error = getString(R.string.invalid_email_warning)
                 }
-                if (!signInViewModel.isValidPassword(password)) {
+                if (!isValidPassword(password)) {
                     binding.editTextPassword.error = getString(R.string.invalid_password_warning)
                 }
             }

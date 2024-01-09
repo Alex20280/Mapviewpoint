@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mapviewpoint.model.GpsCoordinates
 import com.example.mapviewpoint.network.RequestResult
 import com.example.mapviewpoint.usecase.UserLogOutUseCase
 import kotlinx.coroutines.launch
